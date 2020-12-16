@@ -6,9 +6,9 @@ body {
     height: 170px;
     max-width: 120px;
     padding: 0;
-    border: none;
     background-color: transparent;
-    transition: transform .6s;
+    border: none;
+    transition: transform .3s;
     transform-style: preserve-3d;
 }
 
@@ -25,8 +25,8 @@ body {
 }
 
 .card__front {
-    transform: rotateY(180deg);
     display: flex;
+    transform: rotateY(180deg);
     justify-content: center;
     align-items: center;
 }
@@ -36,6 +36,10 @@ body {
 }
 
 .card.flipped {
+    transform: rotateY(180deg);
+}
+
+.card.found {
     transform: rotateY(180deg);
 }
 .card__back img {

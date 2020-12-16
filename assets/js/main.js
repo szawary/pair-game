@@ -19,6 +19,30 @@
         </div>
     */
 
+
+    // Clock
+    let timerIsRunning = false;
+    let currentTime = 0;
+    setInterval(() => {
+        if (!timerIsRunning) { // if timerIsRuning false -> return 
+            return;
+        }
+        currentTime++;
+        showCurrentTime();
+    }, 1000);
+
+    // Show current time
+    const showCurrentTime = () => {
+        let minutes = Math.floor(currentTime / 60);
+        let seconds = currentTime % 60;
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
+        document.querySelector('.current-time').textContent =
+            `${minutes}:${seconds}`;
+    };
+
+
+    // Generati a card
     const getOneCard = (icon) => {
         const div = document.createElement('div');
         div.classList.add('card', 'col-2');
@@ -56,26 +80,54 @@
     }
 
     // Show cards.
+    const startGame = () => {
 
-    const iconArray = icons.concat(icons);    // 2x array
-    shuffle(iconArray);                     // shuffle iconArray
-    const row1 = document.querySelector('.card-row:nth-child(2)');
-    const row2 = document.querySelector('.card-row:nth-child(3)');
-    let i = 0;
-    for (const icon of iconArray) {
-        i++;
-        const card = getOneCard(icon);
-        if (i < 6) {
-            row1.appendChild(card);
-        } else {
-            row2.appendChild(card);
+        const iconArray = icons.concat(icons);    // 2x array
+        let i = 0;
+        shuffle(iconArray);                     // shuffle iconArray
+        const row1 = document.querySelector('.card-row:nth-child(2)');
+        const row2 = document.querySelector('.card-row:nth-child(3)');
+        row1.innerHTML = '';
+        row2.innerHTML = '';
+        for (const icon of iconArray) {
+            i++;
+            const card = getOneCard(icon);
+            if (i < 6) {
+                row1.appendChild(card);
+            } else {
+                row2.appendChild(card);
+            }
         }
-    }
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('click', cardClick);
+        });
+
+    };
+
+
     let blockClicks = false;
     const cardClick = (ev) => {
         if (blockClicks) {
             return;
         }
+
+        if (ev.currentTarget.classList.contains('found')) {
+            return;
+        }
+
+        let clickNum = 0;
+        const showClick = (clickNum) => {
+            document.querySelector('.click-number').textContent = clickNum;
+        }
+        clickNum++;
+        showClick(clickNum);
+
+        if (clickNum === 1) {
+            timerIsRunning = true;
+        }
+
+
 
         ev.currentTarget.classList.toggle('flipped');
         const flippedCard = document.querySelectorAll('.card.flipped');
@@ -87,35 +139,47 @@
                 document.querySelectorAll('.card').forEach(card => {
                     card.classList.remove('flipped');
                 });
-            }, 2000);
+            }, 1000);
 
             checkPair();
         }
-
-
     };
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('click', cardClick);
-    })
 
     const showPoints = (points) => {
-        document.querySelector('user-points').textContent = points;
+        document.querySelector('.user-points').textContent = points;
     }
 
     const checkPair = () => {
         const firstCardIcon = document.querySelector('.card.flipped i');
         if (firstCardIcon) {
             const firstIconClass = firstCardIcon.className.split(' ');
-            const pair = document.querySelectorAll(`card.flipped .${firstIconClass.pop()}`);
+            const pair = document.querySelectorAll(`.card.flipped .${firstIconClass.pop()}`);
             if (pair.length == 2) {
                 points++;
                 showPoints(points);
                 document.querySelectorAll(`.card.flipped`).forEach(
                     card => card.classList.add('found')
                 );
+                const founds = document.querySelectorAll('.found');
+
+                // Won. :-)
+                if (points === icons.length) {
+                    timerIsRunning = false;
+                    const to = setTimeout(() => {
+                        currentTime = 0;
+                        showCurrentTime();
+                        points = 0;
+                        showPoints(points);
+                        clickNum = 0;
+
+                        startGame();
+
+                    }, 5000);
+
+                }
             }
         }
     }
 
+    startGame();
 })();
