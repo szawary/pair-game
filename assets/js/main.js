@@ -107,6 +107,7 @@
 
 
     let blockClicks = false;
+    let clickNum = 0;
     const cardClick = (ev) => {
         if (blockClicks) {
             return;
@@ -116,7 +117,6 @@
             return;
         }
 
-        let clickNum = 0;
         const showClick = (clickNum) => {
             document.querySelector('.click-number').textContent = clickNum;
         }
